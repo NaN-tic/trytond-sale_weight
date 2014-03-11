@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- This file is part of sale_weight module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full copyright notices and license terms. -->
+<data>
+    <xpath expr="/form/notebook/page/field[@name=&quot;currency&quot;]"
+            position="after">
+        <label name="weight"/>
+        <field name="weight"/>
+        <label name="weight_lines"/>
+        <field name="weight_lines"/>
+    </xpath>
+    <xpath expr="/form/notebook/page[@id=&quot;other&quot;]/label[@name=&quot;company&quot;]"
+            position="before">
+        <label name="weight_uom"/>
+        <field name="weight_uom"/>
+    </xpath>
+</data>

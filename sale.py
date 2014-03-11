@@ -1,0 +1,78 @@
+# This file is part of the sale_weight module for Tryton.
+# The COPYRIGHT file at the top level of this repository contains the full
+# copyright notices and license terms.
+from trytond.model import fields
+from trytond.pool import Pool, PoolMeta
+from trytond.pyson import Eval
+from trytond.transaction import Transaction
+
+__all__ = ['Sale']
+__metaclass__ = PoolMeta
+
+
+class Sale:
+    __name__ = 'sale.sale'
+    weight_uom = fields.Many2One('product.uom', 'Weight Uom',
+            states={
+                'readonly': Eval('state') != 'draft',
+            }, depends=['state'])
+    weight_digits = fields.Function(fields.Integer('Weight Digits',
+            on_change_with=['weight_uom']), 'on_change_with_weight_digits')
+    weight = fields.Float('Weight', digits=(16, Eval('weight_digits', 2)),
+            on_change=['carrier', 'party', 'currency', 'sale_date', 'lines', 'weight'], 
+            states={
+                'readonly': Eval('state') != 'draft',
+            }, depends=['state', 'weight_digits'])
+    weight_lines = fields.Function(fields.Float('Weight of Lines',
+            digits=(16, Eval('weight_digits', 2)),
+            depends=['weight_digits']), 'get_weight')
+
+    @classmethod
+    def __setup__(cls):
+        super(Sale, cls).__setup__()
+
+        for fname in ('weight',):
+            if fname not in cls.lines.on_change:
+                cls.lines.on_change.append(fname)
+        for fname in cls.lines.on_change:
+            if fname not in cls.carrier.on_change:
+                cls.carrier.on_change.append(fname)
+
+    def get_weight(self, name=None):
+        return self.sum_weights()
+
+    def sum_weights(self):
+        Uom = Pool().get('product.uom')
+
+        with Transaction().set_context(language='en_US'):
+            UomCategory = Pool().get('product.uom.category')
+            category, = UomCategory.search(['name', '=', 'Weight'])
+        weight = 0.0
+        for line in self.lines:
+            if line.product and line.product.weight:
+                from_uom = line.product.weight_uom
+                to_uom = self.weight_uom and self.weight_uom or line.product.weight_uom
+                weight += Uom.compute_qty(from_uom, line.product.weight * line.quantity,
+                        to_uom, round=False)
+        return weight
+
+    def on_change_with_weight_digits(self, name=None):
+        if self.weight_uom:
+            return self.weight_uom.digits
+        return 2
+
+    def on_change_weight(self):
+        return self.on_change_lines()
+
+    def _get_carrier_context(self):
+        Uom = Pool().get('product.uom')
+
+        context = super(Sale, self)._get_carrier_context()
+
+        if self.carrier.carrier_cost_method != 'weight':
+            return context
+
+        context = context.copy()
+        if self.weight:
+            context['weights'] = [self.weight]
+        return context

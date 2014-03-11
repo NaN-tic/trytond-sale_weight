@@ -1,0 +1,19 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:sale.sale,weight:"
+msgid "Weight"
+msgstr "Pes"
+
+msgctxt "field:sale.sale,weight_digits:"
+msgid "Weight Digits"
+msgstr "Digits del pes"
+
+msgctxt "field:sale.sale,weight_lines:"
+msgid "Weight of Lines"
+msgstr "Pes de les línies"
+
+msgctxt "field:sale.sale,weight_uom:"
+msgid "Weight Uom"
+msgstr "UdM del pes"
