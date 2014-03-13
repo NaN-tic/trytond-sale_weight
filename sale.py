@@ -80,7 +80,7 @@ class Sale:
     def create_shipment(self, shipment_type):
         '''Copy weight value from sale to shipment out'''
         shipments = super(Sale, self).create_shipment(shipment_type)
-        if shipments and shipment_type == 'out':
+        if shipments:
             for shipment in shipments:
                 if self.weight:
                     shipment.weight = self.weight
