@@ -35,7 +35,7 @@ class Sale:
             if fname not in cls.lines.on_change:
                 cls.lines.on_change.append(fname)
         for fname in cls.lines.on_change:
-            if fname not in cls.carrier.on_change:
+            if hasattr(cls, 'carrier') and fname not in cls.carrier.on_change:
                 cls.carrier.on_change.append(fname)
 
     def get_weight(self, name=None):
