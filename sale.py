@@ -16,10 +16,9 @@ class Sale:
             states={
                 'readonly': Eval('state') != 'draft',
             }, depends=['state'])
-    weight_digits = fields.Function(fields.Integer('Weight Digits',
-            on_change_with=['weight_uom']), 'on_change_with_weight_digits')
+    weight_digits = fields.Function(fields.Integer('Weight Digits'),
+        'on_change_with_weight_digits')
     weight = fields.Float('Weight', digits=(16, Eval('weight_digits', 2)),
-            on_change=['carrier', 'party', 'currency', 'sale_date', 'lines', 'weight'], 
             states={
                 'readonly': Eval('state') != 'draft',
             }, depends=['state', 'weight_digits'])
@@ -33,10 +32,10 @@ class Sale:
 
         for fname in ('weight',):
             if fname not in cls.lines.on_change:
-                cls.lines.on_change.append(fname)
+                cls.lines.on_change.add(fname)
         for fname in cls.lines.on_change:
             if hasattr(cls, 'carrier') and fname not in cls.carrier.on_change:
-                cls.carrier.on_change.append(fname)
+                cls.carrier.on_change.add(fname)
 
     def get_weight(self, name=None):
         return self.sum_weights()
@@ -56,11 +55,14 @@ class Sale:
                         to_uom, round=False)
         return weight
 
+    @fields.depends('weight_uom')
     def on_change_with_weight_digits(self, name=None):
         if self.weight_uom:
             return self.weight_uom.digits
         return 2
 
+    @fields.depends('carrier', 'party', 'currency', 'sale_date', 'lines',
+        'weight')
     def on_change_weight(self):
         return self.on_change_lines()
 
