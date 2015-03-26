@@ -4,7 +4,6 @@
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.pyson import Eval
-from trytond.transaction import Transaction
 
 __all__ = ['Sale']
 __metaclass__ = PoolMeta
@@ -67,8 +66,6 @@ class Sale:
         return self.on_change_lines()
 
     def _get_carrier_context(self):
-        Uom = Pool().get('product.uom')
-
         context = super(Sale, self)._get_carrier_context()
 
         if self.carrier.carrier_cost_method != 'weight':
