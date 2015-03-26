@@ -41,19 +41,19 @@ class Sale:
         return self.sum_weights()
 
     def sum_weights(self):
-        Uom = Pool().get('product.uom')
+        pool = Pool()
+        ModelData = pool.get('ir.model.data')
+        Uom = pool.get('product.uom')
 
-        with Transaction().set_context(language='en_US'):
-            UomCategory = Pool().get('product.uom.category')
-            category, = UomCategory.search(['name', '=', 'Weight'])
+        to_uom = self.weight_uom and self.weight_uom \
+                or Uom(ModelData.get_id('product', 'uom_kilogram'))
         weight = 0.0
         for line in self.lines:
             if line.product and line.product.weight:
                 from_uom = line.product.weight_uom
-                to_uom = self.weight_uom and self.weight_uom or line.product.weight_uom
                 weight += Uom.compute_qty(from_uom, line.product.weight * line.quantity,
                         to_uom, round=False)
-        return weight
+        return Uom.compute_qty(from_uom, weight, from_uom, round=True)
 
     @fields.depends('weight_uom')
     def on_change_with_weight_digits(self, name=None):
