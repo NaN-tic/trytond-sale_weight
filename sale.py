@@ -52,7 +52,7 @@ class Sale:
                 from_uom = line.product.weight_uom
                 weight += Uom.compute_qty(from_uom, line.product.weight * line.quantity,
                         to_uom, round=False)
-        return Uom.compute_qty(from_uom, weight, from_uom, round=True)
+        return Uom.compute_qty(to_uom, weight, to_uom, round=True)
 
     @fields.depends('weight_uom')
     def on_change_with_weight_digits(self, name=None):
