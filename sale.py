@@ -23,7 +23,7 @@ class Sale:
             }, depends=['state', 'weight_digits'])
     weight_lines = fields.Function(fields.Float('Weight of Lines',
             digits=(16, Eval('weight_digits', 2)),
-            depends=['weight_digits']), 'get_weight')
+            depends=['weight_digits']), 'get_weight_lines')
 
     @classmethod
     def __setup__(cls):
@@ -36,23 +36,21 @@ class Sale:
             if hasattr(cls, 'carrier') and fname not in cls.carrier.on_change:
                 cls.carrier.on_change.add(fname)
 
-    def get_weight(self, name=None):
-        return self.sum_weights()
+    @classmethod
+    def get_weight_lines(cls, sales, names):
+        Uom = Pool().get('product.uom')
 
-    def sum_weights(self):
-        pool = Pool()
-        ModelData = pool.get('ir.model.data')
-        Uom = pool.get('product.uom')
-
-        to_uom = self.weight_uom and self.weight_uom \
-                or Uom(ModelData.get_id('product', 'uom_kilogram'))
-        weight = 0.0
-        for line in self.lines:
-            if line.product and line.product.weight:
-                from_uom = line.product.weight_uom
-                weight += Uom.compute_qty(from_uom, line.product.weight * line.quantity,
-                        to_uom, round=False)
-        return Uom.compute_qty(to_uom, weight, to_uom, round=True)
+        weight = {}
+        for sale in sales:
+            weight[sale.id] = 0.0
+            for line in sale.lines:
+                if line.quantity and line.product and line.product.weight:
+                    from_uom = line.product.weight_uom
+                    to_uom = sale.weight_uom or line.product.weight_uom
+                    weight[sale.id] += Uom.compute_qty(from_uom,
+                        line.product.weight * line.quantity, to_uom,
+                        round=False)
+        return {'weight_lines': weight}
 
     @fields.depends('weight_uom')
     def on_change_with_weight_digits(self, name=None):
@@ -85,4 +83,3 @@ class Sale:
                     shipment.weight = self.weight
                     shipment.save()
         return shipments
-
