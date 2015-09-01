@@ -61,7 +61,7 @@ class Sale:
     @fields.depends('carrier', 'party', 'currency', 'sale_date', 'lines',
         'weight')
     def on_change_weight(self):
-        return self.on_change_lines()
+        self.on_change_lines()
 
     def _get_carrier_context(self):
         context = super(Sale, self)._get_carrier_context()
