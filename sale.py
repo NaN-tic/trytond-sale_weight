@@ -3,7 +3,7 @@
 # copyright notices and license terms.
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Eval
+from trytond.pyson import Eval, Id
 
 __all__ = ['Sale']
 __metaclass__ = PoolMeta
@@ -12,9 +12,10 @@ __metaclass__ = PoolMeta
 class Sale:
     __name__ = 'sale.sale'
     weight_uom = fields.Many2One('product.uom', 'Weight Uom',
-            states={
-                'readonly': Eval('state') != 'draft',
-            }, depends=['state'])
+        domain=[('category', '=', Id('product', 'uom_cat_weight'))],
+        states={
+            'readonly': Eval('state') != 'draft',
+        }, depends=['state'])
     weight_digits = fields.Function(fields.Integer('Weight Digits'),
         'on_change_with_weight_digits')
     weight = fields.Float('Weight', digits=(16, Eval('weight_digits', 2)),
@@ -41,12 +42,13 @@ class Sale:
         Uom = Pool().get('product.uom')
 
         weight = {}
+        default_uom, = Uom.search([('symbol', '=', 'g')], limit=1)
         for sale in sales:
             weight[sale.id] = 0.0
+            to_uom = sale.weight_uom or default_uom
             for line in sale.lines:
                 if line.quantity and line.product and line.product.weight:
                     from_uom = line.product.weight_uom
-                    to_uom = sale.weight_uom or line.product.weight_uom
                     weight[sale.id] += Uom.compute_qty(from_uom,
                         line.product.weight * line.quantity, to_uom,
                         round=False)
