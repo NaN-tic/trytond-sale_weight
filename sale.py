@@ -38,6 +38,10 @@ class Sale:
                 cls.carrier.on_change.add(fname)
 
     @classmethod
+    def default_weight_digits(cls):
+        return 2
+
+    @classmethod
     def get_weight_lines(cls, sales, names):
         Uom = Pool().get('product.uom')
 
