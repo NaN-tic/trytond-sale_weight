@@ -80,13 +80,8 @@ class Sale:
             context['weights'] = [self.weight]
         return context
 
-    def create_shipment(self, shipment_type):
-        '''Copy weight value from sale to shipment out'''
-        shipments = super(Sale, self).create_shipment(shipment_type)
-        if not shipments:
-            return
-        for shipment in shipments:
-            if self.weight:
-                shipment.weight = self.weight
-                shipment.save()
-        return shipments
+    def _get_shipment_sale(self, Shipment, key):
+        shipment = super(Sale, self)._get_shipment_sale(Shipment, key)
+        if self.weight:
+            shipment.weight = self.weight
+        return shipment
