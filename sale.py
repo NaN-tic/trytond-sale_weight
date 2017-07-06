@@ -38,10 +38,6 @@ class Sale:
                 cls.carrier.on_change.add(fname)
 
     @classmethod
-    def default_weight_digits(cls):
-        return 2
-
-    @classmethod
     def get_weight_lines(cls, sales, names):
         pool = Pool()
         Config = pool.get('stock.configuration')
@@ -88,12 +84,25 @@ class Sale:
         return context
 
     def create_shipment(self, shipment_type):
-        '''Copy weight value from sale to shipment out'''
         shipments = super(Sale, self).create_shipment(shipment_type)
         if not shipments:
             return
+
         for shipment in shipments:
-            if self.weight:
+            if self.weight or self.weight_uom:
                 shipment.weight = self.weight
+                shipment.weight_uom = self.weight_uom
                 shipment.save()
         return shipments
+
+    def create_invoice(self):
+        invoice = super(Sale, self).create_invoice()
+        if not invoice:
+            return
+
+        if self.weight or self.weight_uom:
+            invoice.weight_uom = self.weight_uom
+            invoice.weight = self.weight
+            invoice.save()
+
+        return invoice
