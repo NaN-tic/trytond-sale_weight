@@ -41,12 +41,6 @@ Create chart of accounts::
     >>> expense = accounts['expense']
     >>> cash = accounts['cash']
 
-    >>> Journal = Model.get('account.journal')
-    >>> cash_journal, = Journal.find([('type', '=', 'cash')])
-    >>> cash_journal.credit_account = cash
-    >>> cash_journal.debit_account = cash
-    >>> cash_journal.save()
-
 Create tax::
 
     >>> tax = create_tax(Decimal('.10'))
@@ -76,15 +70,14 @@ Create product::
     >>> template1.purchasable = True
     >>> template1.salable = True
     >>> template1.list_price = Decimal('10')
-    >>> template1.cost_price = Decimal('5')
-    >>> template1.cost_price_method = 'fixed'
     >>> template1.account_expense = expense
     >>> template1.account_revenue = revenue
     >>> template1.weight = 500.00
     >>> template1.weight_uom = gram
+    >>> product, = template1.products
+    >>> product.cost_price = Decimal('5')
     >>> template1.save()
-    >>> product1.template = template1
-    >>> product1.save()
+    >>> product1, = template1.products
 
     >>> product2 = Product()
     >>> template2 = ProductTemplate()
@@ -94,15 +87,14 @@ Create product::
     >>> template2.purchasable = True
     >>> template2.salable = True
     >>> template2.list_price = Decimal('10')
-    >>> template2.cost_price = Decimal('5')
-    >>> template2.cost_price_method = 'fixed'
     >>> template2.account_expense = expense
     >>> template2.account_revenue = revenue
     >>> template2.weight = 1000.50
     >>> template2.weight_uom = gram
+    >>> product2, = template2.products
+    >>> product2.cost_price = Decimal('5')
     >>> template2.save()
-    >>> product2.template = template2
-    >>> product2.save()
+    >>> product2, = template2.products
 
 Create payment term::
 
