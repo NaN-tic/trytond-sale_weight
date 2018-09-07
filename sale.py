@@ -29,13 +29,9 @@ class Sale:
     @classmethod
     def __setup__(cls):
         super(Sale, cls).__setup__()
-
         for fname in ('weight',):
             if fname not in cls.lines.on_change:
                 cls.lines.on_change.add(fname)
-        for fname in cls.lines.on_change:
-            if hasattr(cls, 'carrier') and fname not in cls.carrier.on_change:
-                cls.carrier.on_change.add(fname)
 
     @classmethod
     def get_weight_lines(cls, sales, names):
