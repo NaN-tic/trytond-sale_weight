@@ -118,7 +118,7 @@ Create an Inventory::
     >>> inventory_line.expected_quantity = 0.0
     >>> inventory.click('confirm')
     >>> inventory.state
-    u'done'
+    'done'
 
 Sale products::
 
@@ -140,7 +140,7 @@ Sale products::
     >>> sale.click('confirm')
     >>> sale.click('process')
     >>> sale.state
-    u'processing'
+    'processing'
     >>> sale.weight_lines
     3001.0
     >>> shipment, = sale.shipments
@@ -176,7 +176,7 @@ Sale manual weight::
     >>> sale.click('confirm')
     >>> sale.click('process')
     >>> sale.state
-    u'processing'
+    'processing'
     >>> shipment, = sale.shipments
     >>> shipment.click('assign_try')
     True
