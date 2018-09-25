@@ -54,6 +54,19 @@ Create parties::
     >>> customer = Party(name='Customer')
     >>> customer.save()
 
+Create account categories::
+
+    >>> ProductCategory = Model.get('product.category')
+    >>> account_category = ProductCategory(name="Account Category")
+    >>> account_category.accounting = True
+    >>> account_category.account_expense = expense
+    >>> account_category.account_revenue = revenue
+    >>> account_category.save()
+
+    >>> account_category_tax, = account_category.duplicate()
+    >>> account_category_tax.customer_taxes.append(tax)
+    >>> account_category_tax.save()
+
 Create product::
 
     >>> ProductUom = Model.get('product.uom')
@@ -70,8 +83,7 @@ Create product::
     >>> template1.purchasable = True
     >>> template1.salable = True
     >>> template1.list_price = Decimal('10')
-    >>> template1.account_expense = expense
-    >>> template1.account_revenue = revenue
+    >>> template1.account_category = account_category_tax
     >>> template1.weight = 500.00
     >>> template1.weight_uom = gram
     >>> product, = template1.products
@@ -87,8 +99,7 @@ Create product::
     >>> template2.purchasable = True
     >>> template2.salable = True
     >>> template2.list_price = Decimal('10')
-    >>> template2.account_expense = expense
-    >>> template2.account_revenue = revenue
+    >>> template2.account_category = account_category_tax
     >>> template2.weight = 1000.50
     >>> template2.weight_uom = gram
     >>> product2, = template2.products

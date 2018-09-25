@@ -12,7 +12,6 @@ class SaleWeightTestCase(ModuleTestCase):
     'Test Sale Weight module'
     module = 'sale_weight'
 
-
 def suite():
     suite = trytond.tests.test_tryton.suite()
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
