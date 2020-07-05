@@ -80,7 +80,6 @@ Create product::
     >>> template1.name = 'product1'
     >>> template1.default_uom = unit
     >>> template1.type = 'goods'
-    >>> template1.purchasable = True
     >>> template1.salable = True
     >>> template1.list_price = Decimal('10')
     >>> template1.account_category = account_category_tax
@@ -96,7 +95,6 @@ Create product::
     >>> template2.name = 'product2'
     >>> template2.default_uom = unit
     >>> template2.type = 'goods'
-    >>> template2.purchasable = True
     >>> template2.salable = True
     >>> template2.list_price = Decimal('10')
     >>> template2.account_category = account_category_tax

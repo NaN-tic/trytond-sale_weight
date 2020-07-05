@@ -31,6 +31,8 @@ class Sale(metaclass=PoolMeta):
         for fname in ('weight',):
             if fname not in cls.lines.on_change:
                 cls.lines.on_change.add(fname)
+        if hasattr(Sale, 'carrier'):
+            cls.on_change_weight.depends.add('carrier')
 
     @classmethod
     def get_weight_lines(cls, sales, names):
@@ -62,7 +64,7 @@ class Sale(metaclass=PoolMeta):
             return self.weight_uom.digits
         return 2
 
-    @fields.depends('carrier', 'party', 'currency', 'sale_date', 'lines',
+    @fields.depends('party', 'currency', 'sale_date', 'lines',
         'weight')
     def on_change_weight(self):
         self.on_change_lines()
